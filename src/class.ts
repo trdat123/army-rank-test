@@ -1,53 +1,70 @@
 export class Officer {
     id: number;
     name: string;
-    subordinates: Officer | null;
+    subordinates: Officer[];
+    private rank: number;
 
-    constructor(id: number, name: string, subs: Officer | null) {
+    constructor(id: number, name: string, subs: Officer[]) {
         this.id = id;
         this.name = name;
         this.subordinates = subs;
+        this.rank = 1;
     }
 
-    size() {
-        let i = 1;
-        let currSub: Officer | null = this;
-        while (currSub?.subordinates !== null) {
-            i++;
-            currSub = currSub.subordinates;
-        }
-        return i;
+    addSub(officer: Officer) {
+        officer.rank = this.rank + 1;
+        this.subordinates?.push(officer);
     }
 
-    getOfficer(id: number) {
-        return this.id === id ? this : null;
+    // getRank(id: number, sub: Officer) {
+    //     let rank = 1;
+    //     if (sub.id == id) return rank;
+    //     // if (sub.subordinates?.length == 0) return rank;
+    //     if (sub.subordinates && sub.subordinates.length > 0) {
+    //         sub.subordinates?.forEach((el) => {
+    //             this.getRank(id, el);
+    //         });
+    //     }
+
+    //     return null;
+    // }
+}
+
+export class OfficerList {
+    general: Officer;
+
+    constructor(general: Officer) {
+        this.general = general;
     }
 
-    getRank(id: number) {
-        let rank = 1;
-        let cur: Officer | null = this;
-        while (cur) {
-            if (cur.id === id) {
-                return rank;
-            }
-            cur = cur.subordinates;
-            rank++;
-        }
-        return -1;
-    }
+    // size() {
+    //     let i = 1;
+    //     let currSub: Officer | null = this;
+    //     while (currSub?.subordinates !== null) {
+    //         i++;
+    //         currSub = currSub.subordinates;
+    //     }
+    //     return i;
+    // }
 }
 
 export class ArmyRankingApp {
-    general: Officer;
-
     constructor() {
-        this.general = new Officer(100, "MMP", null);
+        const general = new Officer(100, "MMP", []);
 
-        const sub2 = new Officer(200, "John Weak", null);
-        this.general.subordinates = sub2;
+        const sub2 = new Officer(200, "John Weak", []);
+        const sub3 = new Officer(300, "John Cena", []);
+        const sub4 = new Officer(400, "Ben", []);
+        const sub5 = new Officer(500, "Cooper", []);
 
-        const sub3 = new Officer(300, "John Cena", null);
-        sub2.subordinates = sub3;
+        general.addSub(sub2);
+        general.addSub(sub3);
+
+        sub3.addSub(sub4);
+        sub3.addSub(sub5);
+
+        // const officerList = new OfficerList(general);
+        console.log(general);
     }
 
     moveOfficer(officerID: number, managerID: number): void {}
