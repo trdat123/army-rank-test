@@ -1,8 +1,8 @@
 import { ArmyRankingApp, Officer } from "./class";
+import { colorTable, renderSubs } from "./utils";
 
 const App = new ArmyRankingApp();
 
-// initiate general
 document.querySelector("#app")!.innerHTML = `
     <h1>Vite + TypeScript</h1>
     <div id="list">
@@ -11,22 +11,16 @@ document.querySelector("#app")!.innerHTML = `
 
 const list = document.getElementById("list");
 
-let cur: Officer | null = App.general;
+let general: Officer | null = App.general;
 
-const colorTable = ["#1a1a1a", "#a15ef2", "#3700b3", "#cf6679"];
+list!.innerHTML =
+    /*html*/
+    `
+    <button id="${general.id}" style="margin-left: ${general.rank * 4}rem; background-color: ${
+        colorTable[general.rank - 1]
+    }">
+        ${general.name}
+    </button>
+    `;
 
-while (cur) {
-    let curRank: number = App.general.getRank(cur.id);
-
-    list!.innerHTML +=
-        /*html*/
-        `
-        <button id="${cur.id}" style="margin-left: ${curRank * 6}rem; background-color: ${
-            colorTable[curRank - 1]
-        }">
-            ${cur.name}
-        </button>
-        `;
-
-    cur = cur.subordinates;
-}
+renderSubs(general.subordinates, list);
