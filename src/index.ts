@@ -23,7 +23,6 @@ list!.innerHTML =
     </button>
     `;
 
-const a = App.getSubById(700);
-console.log("a: ", a);
+App.moveOfficer(400, 200);
 
 renderSubs(general.subordinates, list);

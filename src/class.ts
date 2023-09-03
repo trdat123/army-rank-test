@@ -15,6 +15,13 @@ export class Officer {
         officer.rank = this.rank + 1;
         this.subordinates?.push(officer);
     }
+
+    removeSub(officer: Officer) {
+        const targetSubIndex = this.subordinates.indexOf(officer);
+        if (targetSubIndex > -1) {
+            this.subordinates.splice(targetSubIndex, 1);
+        }
+    }
 }
 
 export class ArmyRankingApp {
@@ -49,8 +56,8 @@ export class ArmyRankingApp {
         console.log(general);
     }
 
-    getSubById(id: number, subArray?: Officer[], curManager?: Officer | null) {
-        let res: { sub: Officer | null; manager: Officer | null | undefined } = { sub: null, manager: curManager };
+    getSubById(id: number, subArray?: Officer[], curManager?: Officer) {
+        let res: { sub?: Officer; manager?: Officer } = { sub: undefined, manager: curManager };
         subArray = subArray ?? this.general.subordinates;
 
         for (let el of subArray) {
@@ -65,10 +72,22 @@ export class ArmyRankingApp {
         return res;
     }
 
-    moveOfficer(subID: number, newManagerID: number): void {
-        // remove current sub position
-        // add sub to new position
-        // move sub's subordinates array up to 1 rank
+    moveOfficer(subId: number, newManagerId: number): void {
+        const { sub, manager: curManager } = this.getSubById(subId);
+        const { sub: newManager } = this.getSubById(newManagerId);
+
+        // 1. move sub's subordinates array up to 1 rank
+        sub!.subordinates.forEach((sub) => {
+            // sub.removeSub(sub);
+            curManager?.addSub(sub);
+        });
+        sub!.subordinates = [];
+
+        // 2. remove current sub position
+        curManager?.removeSub(sub!);
+
+        // 3. add sub to new position
+        newManager?.addSub(sub!);
     }
 
     undo(): void {}
