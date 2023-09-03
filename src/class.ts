@@ -15,37 +15,6 @@ export class Officer {
         officer.rank = this.rank + 1;
         this.subordinates?.push(officer);
     }
-
-    // getRank(id: number, sub: Officer) {
-    //     let rank = 1;
-    //     if (sub.id == id) return rank;
-    //     // if (sub.subordinates?.length == 0) return rank;
-    //     if (sub.subordinates && sub.subordinates.length > 0) {
-    //         sub.subordinates?.forEach((el) => {
-    //             this.getRank(id, el);
-    //         });
-    //     }
-
-    //     return null;
-    // }
-}
-
-export class OfficerList {
-    general: Officer;
-
-    constructor(general: Officer) {
-        this.general = general;
-    }
-
-    // size() {
-    //     let i = 1;
-    //     let currSub: Officer | null = this;
-    //     while (currSub?.subordinates !== null) {
-    //         i++;
-    //         currSub = currSub.subordinates;
-    //     }
-    //     return i;
-    // }
 }
 
 export class ArmyRankingApp {
@@ -62,6 +31,7 @@ export class ArmyRankingApp {
         const sub6 = new Officer(600, "A", []);
         const sub7 = new Officer(700, "B", []);
         const sub8 = new Officer(800, "C", []);
+        const sub9 = new Officer(900, "D", []);
 
         general.addSub(sub2);
         general.addSub(sub3);
@@ -74,11 +44,32 @@ export class ArmyRankingApp {
         sub4.addSub(sub7);
         sub4.addSub(sub8);
 
-        // const officerList = new OfficerList(general);
+        sub8.addSub(sub9);
+
         console.log(general);
     }
 
-    moveOfficer(officerID: number, managerID: number): void {}
+    getSubById(id: number, subArray?: Officer[], curManager?: Officer | null) {
+        let res: { sub: Officer | null; manager: Officer | null | undefined } = { sub: null, manager: curManager };
+        subArray = subArray ?? this.general.subordinates;
+
+        for (let el of subArray) {
+            if (el.id === id) {
+                res.sub = el;
+                break;
+            } else if (el.subordinates.length > 0) {
+                res = this.getSubById(id, el.subordinates, el);
+            }
+        }
+
+        return res;
+    }
+
+    moveOfficer(subID: number, newManagerID: number): void {
+        // remove current sub position
+        // add sub to new position
+        // move sub's subordinates array up to 1 rank
+    }
 
     undo(): void {}
 
