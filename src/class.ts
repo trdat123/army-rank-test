@@ -1,14 +1,19 @@
-export class Officer {
-    id: number;
-    name: string;
+import { ArmyRankingAppType, OfficerMethodType } from "./types";
+import { renderSubs } from "./utils";
+
+export class Officer implements OfficerMethodType {
+    readonly id: number;
+    readonly name: string;
     subordinates: Officer[];
     rank: number;
+    isSelected: boolean;
 
     constructor(id: number, name: string, subs: Officer[]) {
         this.id = id;
         this.name = name;
         this.subordinates = subs;
         this.rank = 1;
+        this.isSelected = false;
     }
 
     addSub(officer: Officer) {
@@ -24,12 +29,14 @@ export class Officer {
     }
 }
 
-export class ArmyRankingApp {
+export class ArmyRankingApp implements ArmyRankingAppType {
     general: Officer;
+    selectedOfficers: number[];
 
     constructor() {
         const general = new Officer(100, "MMP", []);
         this.general = general;
+        this.selectedOfficers = [];
 
         const sub2 = new Officer(200, "John Weak", []);
         const sub3 = new Officer(300, "John Cena", []);
@@ -72,15 +79,14 @@ export class ArmyRankingApp {
         return res;
     }
 
-    moveOfficer(subId: number, newManagerId: number): void {
+    moveOfficer(): void {
+        if (this.selectedOfficers.length == 0) return;
+        const [subId, newManagerId] = this.selectedOfficers;
         const { sub, manager: curManager } = this.getSubById(subId);
         const { sub: newManager } = this.getSubById(newManagerId);
 
         // 1. move sub's subordinates array up to 1 rank
-        sub!.subordinates.forEach((sub) => {
-            // sub.removeSub(sub);
-            curManager?.addSub(sub);
-        });
+        sub?.subordinates.forEach((sub) => curManager?.addSub(sub));
         sub!.subordinates = [];
 
         // 2. remove current sub position
@@ -88,6 +94,14 @@ export class ArmyRankingApp {
 
         // 3. add sub to new position
         newManager?.addSub(sub!);
+
+        // re-render
+        const list = document.getElementById("list");
+        list?.replaceChildren();
+        renderSubs(this.general.subordinates, list);
+        this.selectedOfficers = [];
+
+        console.log("done", this.general);
     }
 
     undo(): void {}
