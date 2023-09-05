@@ -82,7 +82,6 @@ export class ArmyRankingApp implements ArmyRankingAppType {
     moveOfficer(): void {
         const [subId, newManagerId] = this.selectedOfficers;
 
-        if (this.selectedOfficers.length == 0) return;
         if (this.selectedOfficers.length < 2) {
             alert("Something wrong, not enough data");
             return;
