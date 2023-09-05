@@ -37,5 +37,4 @@ function setOfficerForMove(subElId: number, officerBtn: HTMLButtonElement) {
         selectedOfficers.push(subElId);
         officerBtn.style.outline = "5px auto white";
     }
-    console.log("🚀 ~ file: utils.ts:28 ~ setOfficerForMove ~ selectedOfficers:", selectedOfficers);
 }

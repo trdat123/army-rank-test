@@ -59,19 +59,19 @@ export class ArmyRankingApp implements ArmyRankingAppType {
         sub4.addSub(sub8);
 
         sub8.addSub(sub9);
-
-        console.log(general);
     }
 
     getSubById(id: number, subArray?: Officer[], curManager?: Officer) {
         let res: { sub?: Officer; manager?: Officer } = { sub: undefined, manager: curManager };
         subArray = subArray ?? this.general.subordinates;
+        curManager = curManager ?? this.general;
 
         for (let el of subArray) {
             if (el.id === id) {
                 res.sub = el;
+                res.manager = curManager;
                 break;
-            } else if (el.subordinates.length > 0) {
+            } else if (!res.sub && el.subordinates.length > 0) {
                 res = this.getSubById(id, el.subordinates, el);
             }
         }
@@ -80,8 +80,14 @@ export class ArmyRankingApp implements ArmyRankingAppType {
     }
 
     moveOfficer(): void {
-        if (this.selectedOfficers.length == 0) return;
         const [subId, newManagerId] = this.selectedOfficers;
+
+        if (this.selectedOfficers.length == 0) return;
+        if (this.selectedOfficers.length < 2) {
+            alert("Something wrong, not enough data");
+            return;
+        }
+
         const { sub, manager: curManager } = this.getSubById(subId);
         const { sub: newManager } = this.getSubById(newManagerId);
 
@@ -100,8 +106,6 @@ export class ArmyRankingApp implements ArmyRankingAppType {
         list?.replaceChildren();
         renderSubs(this.general.subordinates, list);
         this.selectedOfficers = [];
-
-        console.log("done", this.general);
     }
 
     undo(): void {}
