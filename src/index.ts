@@ -15,8 +15,7 @@ appWrapper.innerHTML = /* html */ `
     <div id="list"></div>
     `;
 
-/* function button */
-
+/* function button assign */
 const moveOfficerBtn = document.createElement("button");
 moveOfficerBtn.innerText = "Move Officer";
 moveOfficerBtn.onclick = () => App.moveOfficer();
@@ -31,13 +30,12 @@ redoBtn.onclick = () => App.redo();
 
 const btnWrapper = document.createElement("div");
 btnWrapper.className = "btn-wrapper";
-// btnWrapper.setAttribute("style", "display: flex; flex-direction: flex-row; gap: 7px;");
 btnWrapper.appendChild(moveOfficerBtn);
 btnWrapper.appendChild(undoBtn);
 btnWrapper.appendChild(redoBtn);
 
 appWrapper.appendChild(btnWrapper);
-/* end function button */
+/* end function button assign */
 
 const list = document.getElementById("list");
 renderSubs(general.subordinates, list);

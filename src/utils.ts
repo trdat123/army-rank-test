@@ -11,7 +11,7 @@ export const renderSubs = (subs: Officer[], list: HTMLElement | null) => {
         officerBtn.id = subEl.id.toString();
         officerBtn.setAttribute(
             "style",
-            `margin-left: ${subEl.rank * 4}rem; background-color: ${colorTable[subEl.rank - 1]}`
+            `margin-left: ${subEl.rank * 4}rem; background-color: ${colorTable.at(subEl.rank - 1)}` // todo: fix color render
         );
         officerBtn.innerText = subEl.name;
         officerBtn!.onclick = () => setOfficerForMove(subEl.id, officerBtn);

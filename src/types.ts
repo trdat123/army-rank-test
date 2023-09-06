@@ -5,8 +5,7 @@ export interface OfficerMethodType {
     removeSub(officer: Officer): void;
 }
 
-export interface ArmyRankingAppType {
-    general: Officer;
+export interface ArmyRankingAppMethodType {
     getSubById(id: number, subArray?: Officer[], curManager?: Officer): { sub?: Officer; manager?: Officer };
     moveOfficer(officerID: number, managerID: number): void;
     undo(): void;

@@ -6,5 +6,5 @@
 
 ### Naming & aliases
 
--   `general:` general is the first node and can't be replaced.
--   `officer = sub = subordinate:` any node below general.
+-   `general`: General is the first node and can't be replaced.
+-   `officer = sub = subordinate`: Any node below general.
