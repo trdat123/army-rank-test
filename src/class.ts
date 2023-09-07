@@ -1,5 +1,5 @@
 import { ArmyRankingAppMethodType, OfficerMethodType } from "./types";
-import { renderSubs } from "./utils";
+import { generateId, renderSubs } from "./utils";
 
 export class Officer implements OfficerMethodType {
     readonly id: number;
@@ -16,18 +16,20 @@ export class Officer implements OfficerMethodType {
         this.isSelected = false;
     }
 
-    updateSubsRank(subArray: Officer[]) {
+    updateSubsRank(subArray: Officer[], variation: "upRank" | "downRank") {
         subArray.forEach((subEl) => {
-            subEl.rank--;
-            if (subEl.subordinates.length > 0) this.updateSubsRank(subEl.subordinates);
+            if (variation == "upRank") subEl.rank--;
+            if (variation == "downRank") subEl.rank++;
+
+            if (subEl.subordinates.length > 0) this.updateSubsRank(subEl.subordinates, variation);
             else return;
         });
     }
 
-    addSub(officer: Officer) {
+    addSub(officer: Officer, updateChildRank?: "upRank" | "downRank") {
         officer.rank = this.rank + 1;
-        if (officer.subordinates.length > 0) {
-            this.updateSubsRank(officer.subordinates);
+        if (officer.subordinates.length > 0 && updateChildRank) {
+            this.updateSubsRank(officer.subordinates, updateChildRank);
         }
         this.subordinates?.push(officer);
     }
@@ -43,7 +45,14 @@ export class Officer implements OfficerMethodType {
 export class ArmyRankingApp implements ArmyRankingAppMethodType {
     general: Officer;
     selectedOfficers: number[];
-    actionStore: { action: "undo" | "redo"; sub?: Officer; curManager?: Officer; newManager?: Officer }[];
+    actionStore: {
+        id: string;
+        action: "undo" | "redo";
+        sub?: Officer;
+        oldManager?: Officer;
+        curManager?: Officer;
+        subChild?: Officer[];
+    }[];
 
     constructor() {
         const general = new Officer(100, "MMP", []);
@@ -104,13 +113,24 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
 
         const { sub, manager: curManager } = this.getSubById(subId);
         const { sub: newManager } = this.getSubById(newManagerId);
-
-        // save inverse actions
-        this.actionStore.push({ action: "undo", sub, curManager, newManager });
+        let subChild: Officer[] = [];
 
         // 1. move sub's subordinates array up to 1 rank
-        sub?.subordinates.forEach((sub) => curManager?.addSub(sub));
+        sub?.subordinates.forEach((sub) => {
+            curManager?.addSub(sub, "upRank");
+            subChild.push(sub);
+        });
         sub!.subordinates = [];
+
+        // save inverse actions
+        this.actionStore.push({
+            id: generateId(),
+            action: "undo",
+            sub,
+            oldManager: curManager,
+            curManager: newManager,
+            subChild,
+        });
 
         // 2. remove current sub position
         curManager?.removeSub(sub!);
@@ -129,8 +149,23 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         // get last undo action
         const action = this.actionStore.findLast((el) => el.action === "undo");
         if (!action) return;
-        console.log("🚀 ~ action:", action);
-        const { sub, curManager, newManager } = action;
+
+        const { id, sub, oldManager, curManager, subChild } = action;
+
+        oldManager?.addSub(sub!);
+        curManager?.removeSub(sub!);
+        subChild?.forEach((child) => {
+            sub?.addSub(child, "downRank");
+            oldManager?.removeSub(child);
+        });
+
+        // re-render
+        const list = document.getElementById("list");
+        list?.replaceChildren();
+        renderSubs(this.general.subordinates, list);
+
+        // remove the action from store
+        this.actionStore = this.actionStore.filter((el) => el.id !== id);
     }
 
     redo(): void {}

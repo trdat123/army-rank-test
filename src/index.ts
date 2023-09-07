@@ -1,5 +1,5 @@
 import { ArmyRankingApp, Officer } from "./class";
-import { colorTable, renderSubs } from "./utils";
+import { renderColor, renderSubs } from "./utils";
 
 export const App = new ArmyRankingApp();
 let general: Officer | null = App.general;
@@ -8,7 +8,7 @@ const appWrapper = document.querySelector("#app")!;
 appWrapper.innerHTML = /* html */ `
     <h1>Army Rank</h1>
         <button id="${general.id}" class="officer"
-            style="margin-left: ${general.rank * 4}rem; background-color: ${colorTable[general.rank - 1]}"
+            style="margin-left: ${general.rank * 4}rem; background-color: #1a1a1a"
         >
             ${general.name}
         </button>
