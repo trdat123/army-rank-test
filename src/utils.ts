@@ -3,6 +3,14 @@ import { App } from "./index";
 
 export const renderColor = (position: number) => (position % 2 == 0 ? "#1971C2" : "#FA5252");
 
+export const generateId = () => "id" + Math.random().toString(16).slice(2);
+
+export const reRenderList = () => {
+    const list = document.getElementById("list");
+    list?.replaceChildren();
+    renderSubs(App.general.subordinates, list);
+};
+
 export const renderSubs = (subs: Officer[], list: HTMLElement | null) => {
     subs.forEach((subEl) => {
         const officerBtn = document.createElement("button");
@@ -23,7 +31,7 @@ export const renderSubs = (subs: Officer[], list: HTMLElement | null) => {
     });
 };
 
-function setOfficerForMove(subElId: number, officerBtn: HTMLButtonElement) {
+export function setOfficerForMove(subElId: number, officerBtn: HTMLElement) {
     let selectedOfficers = App.selectedOfficers;
 
     if (selectedOfficers.some((el) => el === subElId)) {
@@ -38,5 +46,3 @@ function setOfficerForMove(subElId: number, officerBtn: HTMLButtonElement) {
         officerBtn.style.outline = "5px auto white";
     }
 }
-
-export const generateId = () => "id" + Math.random().toString(16).slice(2);

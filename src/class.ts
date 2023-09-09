@@ -1,5 +1,5 @@
 import { ArmyRankingAppMethodType, OfficerMethodType } from "./types";
-import { generateId, renderSubs } from "./utils";
+import { generateId, reRenderList, renderSubs } from "./utils";
 
 export class Officer implements OfficerMethodType {
     readonly id: number;
@@ -43,7 +43,7 @@ export class Officer implements OfficerMethodType {
 }
 
 export class ArmyRankingApp implements ArmyRankingAppMethodType {
-    general: Officer;
+    readonly general: Officer;
     selectedOfficers: number[];
     actionStore: {
         id: string;
@@ -72,21 +72,20 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
 
         general.addSub(sub2);
         general.addSub(sub3);
-
         sub2.addSub(sub6);
-
         sub3.addSub(sub4);
         sub3.addSub(sub5);
-
         sub4.addSub(sub7);
         sub4.addSub(sub8);
-
         sub8.addSub(sub9);
         sub9.addSub(sub10);
     }
 
     getSubById(id: number, subArray?: Officer[], curManager?: Officer) {
         let res: { sub?: Officer; manager?: Officer } = { sub: undefined, manager: curManager };
+        if (id === 100) {
+            res.sub = this.general;
+        }
         subArray = subArray ?? this.general.subordinates;
         curManager = curManager ?? this.general;
 
@@ -115,7 +114,7 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         const { sub: newManager } = this.getSubById(newManagerId);
         let subChild: Officer[] = [];
 
-        // 1. move sub's subordinates array up to 1 rank
+        // move sub's subordinates array up to 1 rank
         sub?.subordinates.forEach((sub) => {
             curManager?.addSub(sub, "upRank");
             subChild.push(sub);
@@ -132,16 +131,10 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
             subChild,
         });
 
-        // 2. remove current sub position
         curManager?.removeSub(sub!);
-
-        // 3. add sub to new position
         newManager?.addSub(sub!);
 
-        // re-render
-        const list = document.getElementById("list");
-        list?.replaceChildren();
-        renderSubs(this.general.subordinates, list);
+        reRenderList();
         this.selectedOfficers = [];
     }
 
@@ -159,12 +152,7 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
             oldManager?.removeSub(child);
         });
 
-        // re-render
-        const list = document.getElementById("list");
-        list?.replaceChildren();
-        renderSubs(this.general.subordinates, list);
-
-        // remove the action from store
+        reRenderList();
         this.actionStore = this.actionStore.filter((el) => el.id !== id);
     }
 
