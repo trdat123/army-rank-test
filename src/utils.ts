@@ -3,7 +3,7 @@ import { App } from "./index";
 
 export const renderColor = (position: number) => (position % 2 == 0 ? "#1971C2" : "#FA5252");
 
-export const generateId = () => parseInt(Math.random().toString(10).slice(2));
+export const generateId = () => parseInt(Math.random().toString(10).slice(10));
 
 export const reRenderList = () => {
     const list = document.getElementById("list");
