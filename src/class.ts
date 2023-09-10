@@ -46,7 +46,7 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
     readonly general: Officer;
     selectedOfficers: number[];
     actionStore: {
-        id: string;
+        id: number;
         action: "undo" | "redo";
         sub?: Officer;
         oldManager?: Officer;
@@ -56,20 +56,20 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
     }[];
 
     constructor() {
-        const general = new Officer(100, "MMP", []);
+        const general = new Officer(1, "MMP", []);
         this.general = general;
         this.selectedOfficers = [];
         this.actionStore = [];
 
-        const sub2 = new Officer(200, "John Weak", []);
-        const sub3 = new Officer(300, "John Cena", []);
-        const sub4 = new Officer(400, "Ben", []);
-        const sub5 = new Officer(500, "Cooper", []);
-        const sub6 = new Officer(600, "A", []);
-        const sub7 = new Officer(700, "B", []);
-        const sub8 = new Officer(800, "C", []);
-        const sub9 = new Officer(900, "D", []);
-        const sub10 = new Officer(1000, "E", []);
+        const sub2 = new Officer(generateId(), "John Weak", []);
+        const sub3 = new Officer(generateId(), "John Cena", []);
+        const sub4 = new Officer(generateId(), "Ben", []);
+        const sub5 = new Officer(generateId(), "Cooper", []);
+        const sub6 = new Officer(generateId(), "A", []);
+        const sub7 = new Officer(generateId(), "B", []);
+        const sub8 = new Officer(generateId(), "C", []);
+        const sub9 = new Officer(generateId(), "D", []);
+        const sub10 = new Officer(generateId(), "E", []);
 
         general.addSub(sub2);
         general.addSub(sub3);
@@ -82,13 +82,13 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         sub9.addSub(sub10);
     }
 
-    removeAction(id: string) {
+    removeAction(id: number) {
         return (this.actionStore = this.actionStore.filter((el) => el.id !== id));
     }
 
     getSubById(id: number, subArray?: Officer[], curManager?: Officer) {
         let res: { sub?: Officer; manager?: Officer } = { sub: undefined, manager: curManager };
-        if (id === 100) {
+        if (id === 1) {
             res.sub = this.general;
         }
         subArray = subArray ?? this.general.subordinates;

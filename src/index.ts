@@ -1,5 +1,5 @@
 import { ArmyRankingApp, Officer } from "./class";
-import { renderColor, renderSubs, setOfficerForMove } from "./utils";
+import { handleInput, renderSubs, setOfficerForMove } from "./utils";
 
 export const App = new ArmyRankingApp();
 let general: Officer | null = App.general;
@@ -7,16 +7,21 @@ let general: Officer | null = App.general;
 const appWrapper = document.querySelector("#app")!;
 appWrapper.innerHTML = /* html */ `
     <h1>Army Rank</h1>
+    <div class="node-wrapper">
         <button id="${general.id}" class="officer"
             style="margin-left: ${general.rank * 4}rem; background-color: #1a1a1a"
         >
             ${general.name}
         </button>
+        <button class="add-btn" id="add-btn-general">+</button>
+    </div>
     <div id="list"></div>
     `;
 
-const generalBtn = document.getElementById("100");
+const generalBtn = document.getElementById("1");
 generalBtn!.onclick = () => setOfficerForMove(general!.id, generalBtn!);
+const addBtn: HTMLElement | null = document.querySelector("#add-btn-general");
+addBtn!.onclick = () => handleInput(addBtn, general);
 
 /* function button assign */
 const moveOfficerBtn = document.createElement("button");

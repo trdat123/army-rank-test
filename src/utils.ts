@@ -3,7 +3,7 @@ import { App } from "./index";
 
 export const renderColor = (position: number) => (position % 2 == 0 ? "#1971C2" : "#FA5252");
 
-export const generateId = () => "id" + Math.random().toString(16).slice(2);
+export const generateId = () => parseInt(Math.random().toString(10).slice(2));
 
 export const reRenderList = () => {
     const list = document.getElementById("list");
@@ -14,7 +14,6 @@ export const reRenderList = () => {
 export const renderSubs = (subs: Officer[], list: HTMLElement | null) => {
     subs.forEach((subEl) => {
         const officerBtn = document.createElement("button");
-
         officerBtn.className = "officer";
         officerBtn.id = subEl.id.toString();
         officerBtn.setAttribute(
@@ -24,7 +23,18 @@ export const renderSubs = (subs: Officer[], list: HTMLElement | null) => {
         officerBtn.innerText = subEl.name;
         officerBtn!.onclick = () => setOfficerForMove(subEl.id, officerBtn);
 
-        list?.appendChild(officerBtn);
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-btn";
+        addBtn.id = `add-btn-${subEl.id}`;
+        addBtn.innerText = "+";
+        addBtn.onclick = () => handleInput(addBtn, subEl);
+
+        const nodeWrapper = document.createElement("div");
+        nodeWrapper.className = "node-wrapper";
+        nodeWrapper.appendChild(officerBtn);
+        nodeWrapper.appendChild(addBtn);
+
+        list?.appendChild(nodeWrapper);
 
         if (subEl.subordinates.length > 0) renderSubs(subEl.subordinates, list);
         else return;
@@ -45,4 +55,26 @@ export function setOfficerForMove(subElId: number, officerBtn: HTMLElement) {
         selectedOfficers.push(subElId);
         officerBtn.style.outline = "5px auto white";
     }
+}
+
+export function handleInput(btn: HTMLElement | null, parent: Officer | null) {
+    btn!.style.display = "none";
+    const input = document.createElement("input");
+    btn?.parentElement?.appendChild(input);
+
+    input.focus();
+    input.onblur = () => {
+        input.style.display = "none";
+        btn!.style.display = "";
+    };
+    input.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            if (input.value === "") return;
+            const sub = new Officer(generateId(), input.value, []);
+            parent!.addSub(sub);
+            input.value = "";
+            input.style.display = "none";
+            reRenderList();
+        }
+    });
 }
