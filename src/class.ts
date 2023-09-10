@@ -51,6 +51,7 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         sub?: Officer;
         oldManager?: Officer;
         curManager?: Officer;
+        newManager?: Officer;
         subChild?: Officer[];
     }[];
 
@@ -79,6 +80,10 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         sub4.addSub(sub8);
         sub8.addSub(sub9);
         sub9.addSub(sub10);
+    }
+
+    removeAction(id: string) {
+        return (this.actionStore = this.actionStore.filter((el) => el.id !== id));
     }
 
     getSubById(id: number, subArray?: Officer[], curManager?: Officer) {
@@ -121,7 +126,6 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         });
         sub!.subordinates = [];
 
-        // save inverse actions
         this.actionStore.push({
             id: generateId(),
             action: "undo",
@@ -153,8 +157,44 @@ export class ArmyRankingApp implements ArmyRankingAppMethodType {
         });
 
         reRenderList();
-        this.actionStore = this.actionStore.filter((el) => el.id !== id);
+        this.removeAction(id);
+
+        this.actionStore.push({
+            id: generateId(),
+            action: "redo",
+            sub,
+            curManager: oldManager,
+            newManager: curManager,
+        });
     }
 
-    redo(): void {}
+    redo(): void {
+        // get last redo action
+        const action = this.actionStore.findLast((el) => el.action === "redo");
+        if (!action) return;
+
+        const { id, sub, curManager, newManager } = action;
+        let subChild: Officer[] = [];
+
+        sub?.subordinates.forEach((sub) => {
+            curManager?.addSub(sub, "upRank");
+            subChild.push(sub);
+        });
+        sub!.subordinates = [];
+
+        this.actionStore.push({
+            id: generateId(),
+            action: "undo",
+            sub,
+            oldManager: curManager,
+            curManager: newManager,
+            subChild,
+        });
+
+        curManager?.removeSub(sub!);
+        newManager?.addSub(sub!);
+
+        reRenderList();
+        this.removeAction(id);
+    }
 }
